@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		#a1{width:201px; margin: 100px auto;position: absolute; left: 0;right: 0;}
+		*{margin: 0;padding: 0;font-family: "微软雅黑", "宋体", sans-serif;}
+		input[type = "text"]{height: 30px; font-size:18px; text-indent: 8px;display: block;background:none;border: 2px white solid; outline: none;color: white}
+		input[type = "password"]{height: 30px; font-size:18px; text-indent: 8px;display: block;background:none;border: 2px white solid; outline: none;color: white}
+		.botton{height: 30px;width: 50px;border: 2px white solid;color: white;font-size: 16px;line-height: 30px;text-align: center;}
+			.botton:hover{cursor: pointer;}
+			.botton:active{opacity: 0.7}
+
+		.aa{width: 100px; height: 100px; background-color: gray;}
+
+		html,body{height: 100%; width:100%;}
+
+		body{background: url("1.jpg") no-repeat; background-size: cover; background-position: center;}
+
+		#main{height: 100%; display: none;overflow: auto;}
+
+		#title{text-align: center;font-size: 40px;line-height: 100px;height: 100px;color: white;}
+
+		.data{ width: 500px; height: 46px;border-radius: 10px; margin: 0 auto;
+			margin-bottom: 30px;font-size: 20px; line-height: 50px;text-align: center;position: relative;color: white;border: 2px white solid;display: none;}
+			.data p{position: absolute;left: 10px;}
+			.data div{position: absolute;right: 10px;top: 0;}
+			.data b{display: none;}
+
+		.delete{width: 46px;height: 46px;border: 2px white solid; border-radius: 30px;color: white; text-align: center;line-height: 46px;position: absolute;left: 520px;display: none;}
+			.delete:hover{cursor: pointer;}
+			.delete:active{opacity: 0.7;}
+		
+		#add{width: 80px; height: 40px; border: 2px white solid; line-height: 40px; text-align: center; color: white;position: absolute;right: 100px;bottom: 100px;}
+			#add:hover{cursor: pointer;}
+			#add:active{opacity: 0.7;}
+
+		#addbox{width: 200px;height: 300px;border: 2px white solid;position: absolute;right: 100px;bottom: 180px; display: none;}
+			#addbox p{margin-left: 8px;color: white; line-height: 20px;margin-top: 10px;}
+		input::-webkit-input-placeholder{color: white; opacity: 0.4;}
+
+
+		#send{width: 180px;height: 30px; line-height: 30px; color: white;margin:0 auto;font-size: 20px; text-align: center;border: 2px white solid;font-weight: bold;}
+			#send:active{color: rgb(25,103,152);background-color: white;}
+			#send:hover{cursor: pointer;}
+		.a1{width: 100px;height: 100px;background: gray;}
+
+		#balance{width: 200px; height: 200px; border: 2px white solid; color: white;position: absolute;left: 100px;top: 100px;border-radius: 100px;line-height: 200px;text-align: center;font-size: 30px;}
+
+		#more{width:300px; margin:0 auto;height: 100px; line-height: 100px; color: white; text-align: center;font-size: 26px;opacity: 0.5}
+			#more:hover{cursor: pointer;}
+			#more:active{opacity: 0.3}
+	</style>
+</head>
+<body onselectstart="return false">
+	<div id="a1">
+		<form>
+			<b style="color: white">登录：</b>
+			<input type="text" name="name" id="name" placeholder="用户名">
+			<div id="error" style="color:red;visibility:hidden;">用户名或者密码错误</div>
+			<input type="password" name="password" id="password" placeholder="密码" style="margin-bottom: 10px;">
+			<div class="botton" onclick="show_hide()" style="float: left; width: 80px;">显示密码</div>
+			<div class="botton" onclick="login()" style="float: right;">提交</div>
+		</form>
+
+		<form>
+			<b style="margin-top: 20px; display: block;color: white;margin-top: 50px;">注册：</b>
+			<input type="text" name="name" id="name1" placeholder="输入用户名">
+			<div id="error1" style="color:red;visibility:hidden;">用户名重复</div>
+			<input type="password" name="password" id="password1" placeholder="输入密码">
+			<div id="error2" style="color:red;visibility:hidden;">密码不一致</div>
+			<input type="password" name="password" id="password2" placeholder="重复输入密码" style="margin-bottom: 10px;">
+			<div class="botton" onclick="show_hide2()" style="float: left; width: 80px;">显示密码</div>
+			<div class="botton" onclick="newpop()" style="float: right;">提交</div>
+		</form>
+	</div>
+
+	<div id="main">
+		<div id="addbox">
+			<p>金额（支出-，收入+）</p>
+			<input type="text" name="money" placeholder="输入" style="border: 2px white solid; background: none;color: white;outline:none; width: 180px;margin:10px auto;" value="-">
+			<p>类型</p>
+			<input type="text" name="type" placeholder="输入" style="border: 2px white solid; background: none;color: white;outline:none; width: 180px;margin:10px auto;">
+			<p>日期（XXXX-XX-XX）</p>
+			<input type="text" name="date" placeholder="输入" style="border: 2px white solid; background: none;color: white;outline:none; width: 180px;margin:10px auto;">
+			<div id="send">确认提交</div>
+		</div>
+
+
+		<div id="add">
+			记一笔
+		</div>
+		
+		<p style="font-size: 30px;position: absolute;color: white; left: 175px;top:110px;">余额</p>
+		<div id="balance">
+			
+		</div>
+
+		<div id="title"></div>
+
+		<div id="dataset">
+			<!--
+			<div class="data">
+				<p>2018-4-4</p>
+					-13
+				<div>衣物</div>示例
+				<b>id</b>
+
+			</div>
+			-->
+		</div>
+		<div id="more" onclick="more()">加载更多</div>
+	</div>
+
+<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+
+
+
+	var name;
+	var page=0;
+
+	$("input[name^='money']").focus(function(event) {
+		$(this).val("-");
+	});
+
+	$("#send").on('click', function(event) {
+		senddata();
+	});
+
+	$("#add").on("click", function(){
+		if ($("#addbox").css("display")=="none")
+			$("#addbox").fadeIn(300);
+		else
+			$("#addbox").fadeOut(300);
+	});
+
+	function show_hide()
+	{
+		var val2 = document.getElementById("password");
+		if(val2.type == 'text')
+		{
+			val2.type = 'password';
+		}
+		else
+		{
+			val2.type = 'text';
+		}
+	}
+
+	function show_hide2()
+	{
+		var val1 = document.getElementById("password1");
+		var val2 = document.getElementById("password2");
+		if(val1.type == 'text')
+		{
+			val1.type = 'password';
+			val2.type = 'password';
+		}
+		else
+		{
+			val1.type = 'text';
+			val2.type = 'text';
+		}
+	}
+
+	function newpop() 
+	{
+		var val1 = document.getElementById("name1");
+        var val2 = document.getElementById("password1");
+        var val3 = document.getElementById("password2");
+        var error1 = document.getElementById("error1");
+        var error2 = document.getElementById("error2");
+        if(val3.value != val2.value)
+        {
+        	error2.style.visibility = "visible";
+        	return false;
+        }
+
+        error2.style.visibility = "hidden";
+        $.post('http://127.0.0.1/applicationServer/Home/Bill/signin', {"name":val1.value, "password":val2.value},function(data,status)
+            {
+	            if(status=='success')
+	            {//这里返回的success表示请求成功，单不表述你的逻辑处理成功
+	            	//var data = JSON.parse(data);
+	            	//alert(data);
+	            	console.log(data);
+	            	if(data.success==1)
+	            	{
+	            		error1.style.visibility = "hidden";
+	            		alert("注册成功");
+
+	            	}
+	            	else
+	            	{
+	            		error1.style.visibility = "visible";
+	            		val1.value = '';
+	            	}
+            	}
+            	else
+            	{
+            		alert("无响应");
+            	}
+        	}
+    	);
+	}
+
+	function login()
+    {
+        var val1 = document.getElementById("name");
+        var val2 = document.getElementById("password");
+        var error = document.getElementById("error");
+        $.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":val1.value}, function(data2, status) {
+        	/*optional stuff to do after success */
+        	console.log(data2);
+        	$("#balance").text(data2[0].tol_balance);
+        });
+
+
+        $.post('http://127.0.0.1/applicationServer/Home/Bill/login', {"name":val1.value, "password":val2.value},function(data,status)
+            {
+	            if(status=='success')
+	            {//这里返回的success表示请求成功，单不表述你的逻辑处理成功
+	            	//alert(data);
+	            	//var data = JSON.parse(data);
+	            	if(data.success==1)
+	            	{
+	            		error.style.visibility = "hidden";
+	            		//alert("登录成功");
+	            		name=val1.value;
+	            		page=page+20;
+	            		$("#a1").fadeOut(300);
+	            		$("#main").fadeIn(300);
+	            		$.post('http://127.0.0.1/applicationServer/Home/Bill/getdata', {"name":val1.value},function(data2,status)
+            				{
+            					console.log(data2);
+            					$("#title").text(val1.value);
+            					var j,len,interval;
+            					j=0;
+            					len=data2.length;
+
+            					interval=setInterval(function () {
+            						if(j>=len-1)
+            						{
+            							clearInterval(interval);
+            							setTimeout(function(){
+            								$(".data").on('click',function(event) {
+	            								event.stopPropagation();
+	            								$('.delete').not($(this).children('.delete')).fadeOut(300);
+												$(this).children('.delete').fadeIn(300);
+											});
+											
+	            							$(".delete").on('click',function(event) {
+	            								event.stopPropagation();
+	            								
+	            								var id=$(this).parent().children('b').text();
+	            								var suc=$(this).parent();
+												$.post('http://127.0.0.1/applicationServer/Home/Bill/delete', {"id": id}, function(data3, status) {
+													/*optional stuff to do after success */
+													console.log(data3);
+													if(data3.success)
+														suc.fadeOut(300);
+												});
+												setTimeout(function()
+												{
+													$.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":val1.value}, function(data2, status) {
+													/*optional stuff to do after success */
+													console.log(data2);
+													$("#balance").text(data2[0].tol_balance);
+													});
+												},100);
+
+											});
+            							}, 500);
+            							
+            						}
+
+            						//console.log(j);
+            						$("#dataset").append("<div class='data'><p>"+data2[j].date+"</p>"+data2[j].money+"<div>"+data2[j].type+"</div><b>"+data2[j].id+"</b><div class='delete'>删除</div></div>");
+            						$("#dataset").children(".data:last").fadeIn(300);
+            						j++;
+            					},80);
+            					
+            				}
+            			);
+	            	}
+	            	else
+	            	{
+	            		error.style.visibility = "visible";
+	            		val2.value = "";
+	            	}
+            	}
+        	}
+    	);
+    }
+
+
+
+    function senddata()
+    {
+    	var money=$("input[name^='money']").val();
+    	var type=$("input[name^='type']").val();
+    	var date=$("input[name^='date']").val();
+    	$.post('http://127.0.0.1/applicationServer/Home/Bill/add', {"name": name, "money":money, "type":type, "date":date}, function(data, status) {
+    		if(status=='success')
+	        {
+	        	if(data.success)
+	        	{
+	        		console.log(data);
+	        		$("#dataset").prepend("<div class='data'><p>"+date+"</p>"+money+"<div>"+type+"</div><b>"+data.id+"</b><div class='delete'>删除</div></div>");
+	        		$("#dataset").children(".data:first").fadeIn(300);
+
+	        		$(".delete:first").on('click', function(event) {
+	        			event.stopPropagation();
+						var id=$(this).parent().children('b').text();
+						var suc=$(this).parent();
+						$.post('http://127.0.0.1/applicationServer/Home/Bill/delete', {"id": id}, function(data3, status) {
+							/*optional stuff to do after success */
+							console.log(data3);
+							if(data3.success)
+								suc.fadeOut(300);
+
+							$.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":name}, function(data2, status) {
+							/*optional stuff to do after success */
+							console.log(data2);
+							$("#balance").text(data2[0].tol_balance);
+							});
+						});
+					});
+
+					$(".data").on('click', function(event) {
+						event.stopPropagation();
+						$('.delete').not($(this).children('.delete')).fadeOut(300);
+						$(this).children('.delete').fadeIn(300);
+					});
+
+					$.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":name}, function(data4, status) {
+							/*optional stuff to do after success */
+							console.log(name);
+							$("#balance").text(data4[0].tol_balance);
+							});
+
+	        	}
+	        }
+    	},"json").error(function() {
+    		alert("格式出错或者网络不稳定");
+    	});
+    }
+
+    function more()
+    {
+    	$.post('http://127.0.0.1/applicationServer/Home/Bill/more', {"name":name,"page":page},function(data2,status)
+		{
+
+			var j,len,interval;
+			j=0;
+			len=data2.length;
+			page=page+20;
+			interval=setInterval(function () 
+			{
+				if(j>=len-1)
+				{
+					clearInterval(interval);
+					setTimeout(function(){
+						$(".data").on('click',function(event) 
+						{
+							event.stopPropagation();
+							$('.delete').not($(this).children('.delete')).fadeOut(300);
+							$(this).children('.delete').fadeIn(300);
+						});
+						
+						$(".delete").on('click',function(event) 
+						{
+							event.stopPropagation();
+							
+							var id=$(this).parent().children('b').text();
+							var suc=$(this).parent();
+							$.post('http://127.0.0.1/applicationServer/Home/Bill/delete', {"id": id}, function(data3, status) 
+							{
+								/*optional stuff to do after success */
+								console.log(data3);
+								if(data3.success)
+									suc.fadeOut(300);
+							});
+							setTimeout(function()
+							{
+								$.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":val1.value}, function(data2, status) 
+								{
+								/*optional stuff to do after success */
+								console.log(data2);
+								$("#balance").text(data2[0].tol_balance);
+								});
+							},100);
+
+						});
+					}, 500);
+					
+				}
+
+				//console.log(j);
+				$("#dataset").append("<div class='data'><p>"+data2[j].date+"</p>"+data2[j].money+"<div>"+data2[j].type+"</div><b>"+data2[j].id+"</b><div class='delete'>删除</div></div>");
+				$("#dataset").children(".data:last").fadeIn(300);
+				j++;
+			},80);
+			
+		}
+	);
+
+    }
+
+
+    $('body').click(function(event) {
+
+    	$(".delete").fadeOut(300);
+    });
+</script>
+</body>
+</html>
