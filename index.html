@@ -2,12 +2,13 @@
 <html lang="ch">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes">
 	<title>Document</title>
 	<style type="text/css">
 		#a1{width:201px; margin: 100px auto;position: absolute; left: 0;right: 0;}
 		*{margin: 0;padding: 0;font-family: "微软雅黑", "宋体", sans-serif;}
-		input[type = "text"]{height: 30px; font-size:18px; text-indent: 8px;display: block;background:none;border: 2px white solid; outline: none;color: white}
-		input[type = "password"]{height: 30px; font-size:18px; text-indent: 8px;display: block;background:none;border: 2px white solid; outline: none;color: white}
+		input[type = "text"]{height: 30px;width: 197px; font-size:18px; text-indent: 8px;display: block;background:none;border: 2px white solid; outline: none;color: white}
+		input[type = "password"]{height: 30px; width: 197px;font-size:18px; text-indent: 8px;display: block;background:none;border: 2px white solid; outline: none;color: white}
 		.botton{height: 30px;width: 50px;border: 2px white solid;color: white;font-size: 16px;line-height: 30px;text-align: center;}
 			.botton:hover{cursor: pointer;}
 			.botton:active{opacity: 0.7}
@@ -72,7 +73,7 @@
 			<div id="error2" style="color:red;visibility:hidden;">密码不一致</div>
 			<input type="password" name="password" id="password2" placeholder="重复输入密码" style="margin-bottom: 10px;">
 			<div class="botton" onclick="show_hide2()" style="float: left; width: 80px;">显示密码</div>
-			<div class="botton" onclick="newpop()" style="float: right;">提交</div>
+			<div class="botton" onclick="newAccount()" style="float: right;">提交</div>
 		</form>
 	</div>
 
@@ -117,27 +118,39 @@
 <script type="text/javascript">
 
 
+	/*待改进的部分
+	1.余额更改可在本地进行
+	2.初始加载数据和获取更多数据的API可以合并
+	*/
 
 
-	var name;
-	var page=0;
+	var globe_userName;
+	var dataPage=0;
+
+	var date=new Date();
+	var YMD=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
 
 	$("input[name^='money']").focus(function(event) {
 		$(this).val("-");
 	});
 
-	$("#send").on('click', function(event) {
-		senddata();
+	$("input[name^='date']").focus(function(event) {
+		$(this).val(YMD);
 	});
 
-	$("#add").on("click", function(){
+	$("#send").on('click', function(event) {
+		addData();
+	});
+
+	$("#add").on("click", function()
+	{
 		if ($("#addbox").css("display")=="none")
 			$("#addbox").fadeIn(300);
 		else
 			$("#addbox").fadeOut(300);
 	});
 
-	function show_hide()
+	function show_hide()//登录界面的密码显示
 	{
 		var val2 = document.getElementById("password");
 		if(val2.type == 'text')
@@ -150,7 +163,7 @@
 		}
 	}
 
-	function show_hide2()
+	function show_hide2()//注册界面的密码显示
 	{
 		var val1 = document.getElementById("password1");
 		var val2 = document.getElementById("password2");
@@ -166,255 +179,200 @@
 		}
 	}
 
-	function newpop() 
+	function newAccount() 
 	{
-		var val1 = document.getElementById("name1");
-        var val2 = document.getElementById("password1");
-        var val3 = document.getElementById("password2");
-        var error1 = document.getElementById("error1");
-        var error2 = document.getElementById("error2");
-        if(val3.value != val2.value)
+		var val1 = document.getElementById("name1");//注册的账号名
+        var val2 = document.getElementById("password1");//第一次输入的密码
+        var val3 = document.getElementById("password2");//第二次输入的密码
+        var error_sameName = document.getElementById("error1");//账号名重复错误显示
+        var error_diffPasw = document.getElementById("error2");//密码不一致错误
+
+        if(val1.value=="" | val2.value=="" | val3.value=="")//信息不完整检测
+        {	
+        	alert("信息输入不完整");
+        	return;
+		}
+
+        if(val3.value != val2.value)//密码不一致检测
         {
-        	error2.style.visibility = "visible";
-        	return false;
+        	error_diffPasw.style.visibility = "visible";
+        	return;
         }
+        error_diffPasw.style.visibility = "hidden";
 
-        error2.style.visibility = "hidden";
-        $.post('http://127.0.0.1/applicationServer/Home/Bill/signin', {"name":val1.value, "password":val2.value},function(data,status)
+
+        $.post('/applicationServer/Home/Bill/signin', {"name":val1.value, "password":val2.value},function(data,status)
+        {
+            if(status=='success')
             {
-	            if(status=='success')
-	            {//这里返回的success表示请求成功，单不表述你的逻辑处理成功
-	            	//var data = JSON.parse(data);
-	            	//alert(data);
-	            	console.log(data);
-	            	if(data.success==1)
-	            	{
-	            		error1.style.visibility = "hidden";
-	            		alert("注册成功");
-
-	            	}
-	            	else
-	            	{
-	            		error1.style.visibility = "visible";
-	            		val1.value = '';
-	            	}
+            	console.log(data);
+            	if(data.success==1)
+            	{
+            		error_sameName.style.visibility = "hidden";
+            		alert("注册成功");
             	}
             	else
             	{
-            		alert("无响应");
+            		error_sameName.style.visibility = "visible";
+            		val1.value = '';
             	}
         	}
-    	);
+        	else
+        	{
+        		alert("服务器无响应");
+        	}
+        });
 	}
+
+	$("#dataset").on('click', '.data', function(event) //为动态添加的数据条绑定事件
+	{	
+		event.stopPropagation();
+
+		$('.delete').not($(this).children('.delete')).fadeOut(300);
+		$(this).children('.delete').fadeIn(300);
+	});
+
+	$("#dataset").on('click', '.delete', function(event) //为动态添加的删除键绑定事件
+	{	
+		event.stopPropagation();
+		
+		var id=$(this).parent().children('b').text();	//获取数据条id用来访问sql删除数据
+		var suc=$(this).parent();		//获取整个数据条元素
+
+		//删除数据库操作和删除动画
+		$.post('/applicationServer/Home/Bill/delete', {"id": id}, function(data3, status) {
+			console.log(data3);
+			if(data3.success)
+				suc.animate({height:"0", opacity:"0", marginBottom:"0"}, 300, function(){
+					$(this).remove();
+				})
+		});
+
+		//延时执行余额查询
+		setTimeout(function()
+		{
+			$.post('/applicationServer/Home/Bill/getremain', {"name":globe_userName}, function(data2, status) {
+				$("#balance").text(data2[0].tol_balance);
+			});
+		},100);
+	});
 
 	function login()
     {
         var val1 = document.getElementById("name");
         var val2 = document.getElementById("password");
         var error = document.getElementById("error");
-        $.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":val1.value}, function(data2, status) {
-        	/*optional stuff to do after success */
+
+        if(val1.value=="" | val2.value=="")//信息不完整检测
+        {	
+        	alert("信息输入不完整");
+        	return;
+		}
+
+        //登录验证
+        $.post('/applicationServer/Home/Bill/login', {"name":val1.value, "password":val2.value},function(data,status)
+        {
+            if(status=='success')
+            {
+            	if(data.success==1)
+            	{
+            		error.style.visibility = "hidden";
+            		//alert("登录成功");
+            		globe_userName=val1.value;
+            		dataPage=dataPage+20;
+            		$("#a1").fadeOut(300);
+            		$("#main").fadeIn(300);
+
+            		$.post('/applicationServer/Home/Bill/getdata', {"name":val1.value},function(data2,status)
+        			{
+    					console.log(data2);
+    					$("#title").text(val1.value);
+    					
+    					addDataToHtml(data2);		
+        			});
+            	}
+            	else
+            	{
+            		error.style.visibility = "visible";
+            		val2.value = "";
+            		return;
+            	}
+        	}
+        });
+
+        //获取余额
+        $.post('/applicationServer/Home/Bill/getremain', {"name":val1.value}, function(data2, status) 
+        {
         	console.log(data2);
         	$("#balance").text(data2[0].tol_balance);
         });
-
-
-        $.post('http://127.0.0.1/applicationServer/Home/Bill/login', {"name":val1.value, "password":val2.value},function(data,status)
-            {
-	            if(status=='success')
-	            {//这里返回的success表示请求成功，单不表述你的逻辑处理成功
-	            	//alert(data);
-	            	//var data = JSON.parse(data);
-	            	if(data.success==1)
-	            	{
-	            		error.style.visibility = "hidden";
-	            		//alert("登录成功");
-	            		name=val1.value;
-	            		page=page+20;
-	            		$("#a1").fadeOut(300);
-	            		$("#main").fadeIn(300);
-	            		$.post('http://127.0.0.1/applicationServer/Home/Bill/getdata', {"name":val1.value},function(data2,status)
-            				{
-            					console.log(data2);
-            					$("#title").text(val1.value);
-            					var j,len,interval;
-            					j=0;
-            					len=data2.length;
-
-            					interval=setInterval(function () {
-            						if(j>=len-1)
-            						{
-            							clearInterval(interval);
-            							setTimeout(function(){
-            								$(".data").on('click',function(event) {
-	            								event.stopPropagation();
-	            								$('.delete').not($(this).children('.delete')).fadeOut(300);
-												$(this).children('.delete').fadeIn(300);
-											});
-											
-	            							$(".delete").on('click',function(event) {
-	            								event.stopPropagation();
-	            								
-	            								var id=$(this).parent().children('b').text();
-	            								var suc=$(this).parent();
-												$.post('http://127.0.0.1/applicationServer/Home/Bill/delete', {"id": id}, function(data3, status) {
-													/*optional stuff to do after success */
-													console.log(data3);
-													if(data3.success)
-														suc.fadeOut(300);
-												});
-												setTimeout(function()
-												{
-													$.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":val1.value}, function(data2, status) {
-													/*optional stuff to do after success */
-													console.log(data2);
-													$("#balance").text(data2[0].tol_balance);
-													});
-												},100);
-
-											});
-            							}, 500);
-            							
-            						}
-
-            						//console.log(j);
-            						$("#dataset").append("<div class='data'><p>"+data2[j].date+"</p>"+data2[j].money+"<div>"+data2[j].type+"</div><b>"+data2[j].id+"</b><div class='delete'>删除</div></div>");
-            						$("#dataset").children(".data:last").fadeIn(300);
-            						j++;
-            					},80);
-            					
-            				}
-            			);
-	            	}
-	            	else
-	            	{
-	            		error.style.visibility = "visible";
-	            		val2.value = "";
-	            	}
-            	}
-        	}
-    	);
     }
 
-
-
-    function senddata()
+    function addData()	//添加数据条
     {
     	var money=$("input[name^='money']").val();
     	var type=$("input[name^='type']").val();
     	var date=$("input[name^='date']").val();
-    	$.post('http://127.0.0.1/applicationServer/Home/Bill/add', {"name": name, "money":money, "type":type, "date":date}, function(data, status) {
+    	$.post('/applicationServer/Home/Bill/add', {"name": globe_userName, "money":money, "type":type, "date":date}, function(data, status) 
+    	{
     		if(status=='success')
 	        {
 	        	if(data.success)
 	        	{
-	        		console.log(data);
 	        		$("#dataset").prepend("<div class='data'><p>"+date+"</p>"+money+"<div>"+type+"</div><b>"+data.id+"</b><div class='delete'>删除</div></div>");
 	        		$("#dataset").children(".data:first").fadeIn(300);
 
-	        		$(".delete:first").on('click', function(event) {
-	        			event.stopPropagation();
-						var id=$(this).parent().children('b').text();
-						var suc=$(this).parent();
-						$.post('http://127.0.0.1/applicationServer/Home/Bill/delete', {"id": id}, function(data3, status) {
-							/*optional stuff to do after success */
-							console.log(data3);
-							if(data3.success)
-								suc.fadeOut(300);
-
-							$.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":name}, function(data2, status) {
-							/*optional stuff to do after success */
-							console.log(data2);
-							$("#balance").text(data2[0].tol_balance);
-							});
-						});
+					$.post('/applicationServer/Home/Bill/getremain', {"name":globe_userName}, function(data4, status) 
+					{
+						console.log(globe_userName);
+						$("#balance").text(data4[0].tol_balance);
 					});
-
-					$(".data").on('click', function(event) {
-						event.stopPropagation();
-						$('.delete').not($(this).children('.delete')).fadeOut(300);
-						$(this).children('.delete').fadeIn(300);
-					});
-
-					$.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":name}, function(data4, status) {
-							/*optional stuff to do after success */
-							console.log(name);
-							$("#balance").text(data4[0].tol_balance);
-							});
 
 	        	}
 	        }
-    	},"json").error(function() {
-    		alert("格式出错或者网络不稳定");
+    	},"json").error(function() 
+    	{
+    		alert("服务器出错或者网络不稳定");
     	});
     }
 
     function more()
     {
-    	$.post('http://127.0.0.1/applicationServer/Home/Bill/more', {"name":name,"page":page},function(data2,status)
+    	$.post('/applicationServer/Home/Bill/more', {"name":globe_userName,"page":dataPage},function(data2,status)
 		{
+			dataPage=dataPage+20;
+			addDataToHtml(data2);
+		});
+    }
 
-			var j,len,interval;
-			j=0;
-			len=data2.length;
-			page=page+20;
-			interval=setInterval(function () 
-			{
-				if(j>=len-1)
-				{
-					clearInterval(interval);
-					setTimeout(function(){
-						$(".data").on('click',function(event) 
-						{
-							event.stopPropagation();
-							$('.delete').not($(this).children('.delete')).fadeOut(300);
-							$(this).children('.delete').fadeIn(300);
-						});
-						
-						$(".delete").on('click',function(event) 
-						{
-							event.stopPropagation();
-							
-							var id=$(this).parent().children('b').text();
-							var suc=$(this).parent();
-							$.post('http://127.0.0.1/applicationServer/Home/Bill/delete', {"id": id}, function(data3, status) 
-							{
-								/*optional stuff to do after success */
-								console.log(data3);
-								if(data3.success)
-									suc.fadeOut(300);
-							});
-							setTimeout(function()
-							{
-								$.post('http://127.0.0.1/applicationServer/Home/Bill/getremain', {"name":val1.value}, function(data2, status) 
-								{
-								/*optional stuff to do after success */
-								console.log(data2);
-								$("#balance").text(data2[0].tol_balance);
-								});
-							},100);
-
-						});
-					}, 500);
-					
-				}
-
-				//console.log(j);
-				$("#dataset").append("<div class='data'><p>"+data2[j].date+"</p>"+data2[j].money+"<div>"+data2[j].type+"</div><b>"+data2[j].id+"</b><div class='delete'>删除</div></div>");
-				$("#dataset").children(".data:last").fadeIn(300);
-				j++;
-			},80);
-			
+    function addDataToHtml(data2)
+    {
+    	var i=0,len,interval;
+		len=data2.length;
+		
+		if(len==0)
+		{
+			$("#more").text("没有更多了……");
 		}
-	);
 
+		interval=setInterval(function () 
+		{
+			if(i>=len-1){
+				clearInterval(interval);
+			}
+
+			$("#dataset").append("<div class='data'><p>"+data2[i].date+"</p>"+data2[i].money+"<div>"+data2[i].type+"</div><b>"+data2[i].id+"</b><div class='delete'>删除</div></div>");
+			$("#dataset").children(".data:last").fadeIn(300);
+
+			i++;
+		},80);    //每隔一段时间添加一个元素，每个元素花一段时间显示动画
     }
 
 
     $('body').click(function(event) {
-
     	$(".delete").fadeOut(300);
     });
+
 </script>
 </body>
 </html>
